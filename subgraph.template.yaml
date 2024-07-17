@@ -1,0 +1,113 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: DydxToken
+    network: {{network}}
+    source:
+      address: "{{dydxTokenAddress}}"
+      abi: DydxToken
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: DydxToken
+          file: ./abi/contracts/governance/token/DydxToken.sol/DydxToken.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTokenTransfer
+        - event: DelegatedPowerChanged(indexed address,uint256,uint8)
+          handler: handleTokenDelegation
+      file: ./src/token.ts
+  - kind: ethereum/contract
+    name: DydxGovernor
+    network: {{network}}
+    source:
+      address: "{{dydxGovernorAddress}}"
+      abi: DydxGovernor
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Proposal
+        - ProposalVote
+      abis:
+        - name: DydxGovernor
+          file: ./abi/contracts/governance/DydxGovernor.sol/DydxGovernor.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,indexed address,indexed address,address[],uint256[],string[],bytes[],bool[],uint256,uint256,address,bytes32)
+          handler: handleProposalCreated
+        - event: VoteEmitted(uint256,indexed address,bool,uint256)
+          handler: handleVoteEmitted
+      file: ./src/proposal.ts
+  - kind: ethereum/contract
+    name: SafetyModule
+    network: {{network}}
+    source:
+      address: "{{safetyModuleAddress}}"
+      abi: SafetyModule
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: SafetyModule
+          file: ./abi/contracts/safety/v1/SafetyModuleV1.sol/SafetyModuleV1.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleSafetyModuleTransfer
+        - event: DelegatedPowerChanged(indexed address,uint256,uint8)
+          handler: handleSafetyModuleDelegation
+        - event: ClaimedRewards(indexed address,address,uint256)
+          handler: handleSafetyModuleClaimRewards
+      file: ./src/safety-module.ts
+  - kind: ethereum/contract
+    name: MerkleDistributor
+    network: {{network}}
+    source:
+      address: "{{merkleDistributorAddress}}"
+      abi: MerkleDistributor
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: MerkleDistributor
+          file: ./abi/contracts/merkle-distributor/v1/MerkleDistributorV1.sol/MerkleDistributorV1.json
+      eventHandlers:
+        - event: RewardsClaimed(address,uint256)
+          handler: handleMerkleDistributorClaimRewards
+      file: ./src/merkle-distributor.ts
+  - kind: ethereum/contract
+    name: LiquidityStaking
+    network: {{network}}
+    source:
+      address: "{{liquidityStakingAddress}}"
+      abi: LiquidityStaking
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - User
+      abis:
+        - name: LiquidityStaking
+          file: ./abi/contracts/liquidity/v1/LiquidityStakingV1.sol/LiquidityStakingV1.json
+      eventHandlers:
+        - event: ClaimedRewards(indexed address,address,uint256)
+          handler: handleLiquidityStakingClaimedRewards
+      file: ./src/liquidity-staking.ts

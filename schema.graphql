@@ -1,0 +1,41 @@
+type User @entity {
+  "ID attribute is user public key"
+  id: ID!
+  totalTokens: BigInt!
+  totalStakedTokens: BigInt!
+  votingPower: BigInt!
+  proposingPower: BigInt!
+  tokenVotingPower: BigInt!
+  tokenProposingPower: BigInt!
+  stakedTokenVotingPower: BigInt!
+  stakedTokenProposingPower: BigInt!
+}
+
+type Proposal @entity {
+  "ID attribute is proposal ID"
+  id: ID!
+}
+
+type ProposalVote @entity {
+  "ID attribute is a function of user ID and proposal ID, e.g. {user.id}-{proposal.id}"
+  id: ID!
+  proposal: Proposal!
+  user: User!
+  support: Boolean!
+  votingPower: BigInt!
+}
+
+type RewardsClaimed @entity {
+  "ID attribute is a function of user ID and rewards claim number at the time of claiming, e.g. {user.id}-{incentivesModule}-{claimTimestamp}"
+  id: ID!
+  user: User!
+  incentivesModule: IncentivesModule!
+  claimTimestamp: BigInt!
+  rewards: BigInt!
+}
+
+enum IncentivesModule {
+  MerkleDistributor
+  SafetyModule
+  LiquidityStaking
+}
